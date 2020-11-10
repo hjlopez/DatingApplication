@@ -14,6 +14,7 @@ export class AccountService {
 
   // 1 -> number of previous value that we want to restore
   // only null or current user object
+  // reason why it's set as an observable is to be observed by other components or classes in the app
   private currentUserSource = new ReplaySubject<User>(1);
   currentUser$ = this.currentUserSource.asObservable(); // $ because it's an observable
 
@@ -43,7 +44,7 @@ export class AccountService {
           // return user; // to return user value if needed
         }
       })
-    )
+    );
   }
 
   setCurrentUser(user: User): void
