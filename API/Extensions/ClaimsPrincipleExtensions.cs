@@ -6,7 +6,14 @@ namespace API.Extensions
     {
         public static string GetUsername(this ClaimsPrincipal user)
         {
-            return user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // Name -> represents the unique name property
+            return user.FindFirst(ClaimTypes.Name)?.Value;
+        }
+
+        public static int GetUserId(this ClaimsPrincipal user)
+        {
+            // NameIdentifier -> represents the NameId property
+            return int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value);
         }
     }
 }
