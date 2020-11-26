@@ -1,4 +1,5 @@
 using API.Data;
+using API.Data.Migrations;
 using API.Helpers;
 using API.Interfaces;
 using API.Services;
@@ -18,6 +19,7 @@ namespace API.Extensions
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings")); // strongly type Configure<class>(where to get)
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
+            services.AddScoped<ILikesRepository, LikesRepository>();
             services.AddScoped<LogUserActivity>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
