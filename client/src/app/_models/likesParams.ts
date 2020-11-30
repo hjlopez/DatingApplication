@@ -1,6 +1,6 @@
-export class LikesParams
+import { PageParams } from './pageParams';
+
+export class LikesParams extends PageParams
 {
     predicate = 'liked';
-    pageNumber = 1;
-    pageSize = 5;
 }
