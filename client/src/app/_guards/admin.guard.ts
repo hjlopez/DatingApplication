@@ -8,17 +8,20 @@ import { AccountService } from '../_services/account.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate {
+export class AdminGuard implements CanActivate {
   constructor(private accountService: AccountService, private toastr: ToastrService) {}
 
-  // using a guard automatically subscribes
-  // to not let unauthorize user to access authorize pages
-  canActivate(): Observable<boolean>{
+  canActivate(): Observable<boolean> {
     return this.accountService.currentUser$.pipe(
       map(user => {
-        if (user) { return true; }
-        this.toastr.error('Unathorized!');
+        if (user.roles.includes('Admin') || user.roles.includes('Moderator'))
+        {
+          return true;
+        }
+
+        this.toastr.error('You cannot access this page!')
       })
     );
   }
+
 }
