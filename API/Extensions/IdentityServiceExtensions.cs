@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.Tasks;
 using API.Data;
 using API.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,6 +34,27 @@ namespace API.Extensions
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["TokenKey"])),
                         ValidateIssuer = false, // issuer = api
                         ValidateAudience = false // audience = angular
+                    };
+
+                    // for SignalR
+                    // allows client to send up token like a query string
+                    options.Events = new JwtBearerEvents 
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            // access_token is specific
+                            var accessToken = context.Request.Query["access_token"];
+
+                            var path = context.HttpContext.Request.Path;
+
+                            // paths that has hubs in url
+                            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                            {
+                                context.Token = accessToken;
+                            }
+
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 
