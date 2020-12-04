@@ -41,6 +41,7 @@ export class UserManagementComponent implements OnInit {
     // name must be the same as the input property in roles-modal.ts
     this.bsModalRef.content.updateSelectedRoles.subscribe(values => {
       const rolesToUpdate = {
+        // gets checked roles
         roles: [...values.filter(el => el.checked === true).map(el => el.name)]
       };
 

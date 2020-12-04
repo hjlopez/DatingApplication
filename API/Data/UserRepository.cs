@@ -63,17 +63,16 @@ namespace API.Data
             return await context.Users.Include(p => p.Photos).SingleOrDefaultAsync(x => x.UserName == username);
         }
 
+        public async Task<string> GetUserGender(string username)
+        {
+            return await context.Users.Where(x => x.UserName == username).Select(x => x.Gender).FirstOrDefaultAsync();
+        }
+
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
             // to include relational objects e.g. photos of user
             return await context.Users.Include(p => p.Photos).ToListAsync();
         }
-
-        public async Task<bool> SaveAllAsync()
-        {
-            return await context.SaveChangesAsync() > 0; // returns more than 0 if there are saved changes
-        }
-
         public void Update(AppUser user)
         {
             context.Entry(user).State = EntityState.Modified; // add flag to entity that its been modified

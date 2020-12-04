@@ -3,6 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Message } from '../_models/message';
 import { MessageParams } from '../_models/messageParams';
 import { Pagination } from '../_models/pagination';
+import { ConfirmService } from '../_services/confirm.service';
 import { MessageService } from '../_services/message.service';
 
 @Component({
@@ -15,7 +16,7 @@ export class MessagesComponent implements OnInit {
   pagination: Pagination;
   messageParams: MessageParams;
 
-  constructor(private messageService: MessageService, private toastr: ToastrService) {
+  constructor(private messageService: MessageService, private toastr: ToastrService, private confirmService: ConfirmService) {
     this.messageParams = messageService.getMessageParams();
   }
 
@@ -35,9 +36,14 @@ export class MessagesComponent implements OnInit {
 
   deleteMessage(id: number): void
   {
-    this.messageService.deleteMessage(id).subscribe(() => {
-      this.messages.splice(this.messages.findIndex(m => m.id === id), 1);
-      this.toastr.success('Message deleted!');
+    this.confirmService.confirm('Confirm delete message?', 'This action cannot be undone!').subscribe(result => {
+      if (result)
+      {
+        this.messageService.deleteMessage(id).subscribe(() => {
+          this.messages.splice(this.messages.findIndex(m => m.id === id), 1);
+          this.toastr.success('Message deleted!');
+        });
+      }
     });
   }
 
