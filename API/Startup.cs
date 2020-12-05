@@ -76,6 +76,11 @@ namespace API
 
             app.UseAuthorization();
 
+            // for publishing
+            app.UseDefaultFiles(); // if there is an index.html, it will serve that
+            app.UseStaticFiles();
+
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
@@ -83,6 +88,9 @@ namespace API
                 // add hubs here in endpoint
                 endpoints.MapHub<PresenceHub>("hubs/presence");
                 endpoints.MapHub<MessageHub>("hubs/message");
+
+                // for fallback in publishing
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }
