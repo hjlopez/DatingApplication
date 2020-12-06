@@ -9,6 +9,7 @@ import { Message } from '../_models/message';
 import { MessageParams } from '../_models/messageParams';
 import { PaginatedResult } from '../_models/pagination';
 import { User } from '../_models/user';
+import { BusyService } from './busy.service';
 import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
 
 @Injectable({
@@ -22,13 +23,14 @@ export class MessageService {
   private messageThreadSource = new BehaviorSubject<Message[]>([]);
   messageThread$ = this.messageThreadSource.asObservable();
 
-  constructor(private http: HttpClient)
+  constructor(private http: HttpClient, private busyService: BusyService)
   {
     this.messageParams = new MessageParams();
   }
 
   createHubConnection(user: User, otherUsername: string): void
   {
+    this.busyService.busy();
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(this.hubUrl + 'message?user=' + otherUsername, {
         accessTokenFactory: () => user.token
@@ -36,7 +38,7 @@ export class MessageService {
       .withAutomaticReconnect()
       .build();
 
-    this.hubConnection.start().catch(error => console.log(error));
+    this.hubConnection.start().catch(error => console.log(error)).finally(() => this.busyService.idle());
 
     this.hubConnection.on('ReceivedMessageThread', messages => {
       this.messageThreadSource.next(messages);
@@ -69,6 +71,7 @@ export class MessageService {
   {
     if (this.hubConnection)
     {
+      this.messageThreadSource.next([]);
       this.hubConnection.stop();
     }
   }
